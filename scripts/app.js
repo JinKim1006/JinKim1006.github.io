@@ -7,7 +7,6 @@
     function Start()
     {
         console.log("App Started!");
-        //window.addEventListener("click", DisplayHomePage);
         switch(document.title)
         {
             case "Home":
@@ -25,6 +24,9 @@
             case "About Us":
                 DisplayAboutPage();
                 break;
+            case "Contact List":
+                DisplayContactListPage();
+                break;
         }
     }
 
@@ -32,6 +34,7 @@
     window.addEventListener("load", Start)
 
     function DisplayHomePage() {
+        console.log("Display Home Page");
         let AboutUsButton = document.getElementById("AboutUsBtn");
         AboutUsButton.addEventListener("click", function () {
             //console.log("About Us Button Clicked");
@@ -77,16 +80,66 @@
     }
 
     function DisplayProductPage() {
+        console.log("Display Contact Us Page");
 
     }
+
     function DisplayServicePage() {
+        console.log("Display Service Page");
 
     }
+
     function DisplayContactPage() {
+        console.log("Display Contact Us Page");
+
+        let sendButton = document.getElementById("sendButton");
+        let subscribeCheckbox = document.getElementById("subscribeCheckbox");
+
+        sendButton.addEventListener("click", function(event)
+        {
+            //event.preventDefault();
+            if(subscribeCheckbox.checked){
+                console.log("Checkbox checked!")
+
+                let contact = new Contact(fullName.value, contactNumber.value, emailAddress.value);
+                if(contact.serialize()){
+                    let key = contact.FullName.substring(0,1) + Date.now();
+                    localStorage.setItem(key, contact.serialize());
+                }
+            }
+        });
+    }
+
+    function DisplayAboutPage() {
+        console.log("Display About Us Page");
 
     }
-    function DisplayAboutPage() {
 
+    function DisplayContactListPage() {
+        console.log("Display Contact List Page");
+
+        if(localStorage.length > 0){
+            let contactList = document.getElementById("contactList");
+            let data = "";  // add deserialize data from localStorage
+
+            let keys = Object.keys(localStorage);  // return a string array of keys
+
+            let index = 1;
+            for(const key of keys){
+                let contactData = localStorage.getItem(key);
+                let contact = new Contact();
+                contact.deserialize(contactData);
+                data += `<tr><th scope="row" class="text-center">${index}</th>
+                         <td>${contact.FullName}</td>
+                         <td>${contact.ContactNumber}</td>
+                         <td>${contact.EmailAddress}</td>
+                         <td></td>
+                         <td></td>
+                         </tr>`;
+                index++;
+            }
+            contactList.innerHTML = data;
+        }
     }
 
 })();

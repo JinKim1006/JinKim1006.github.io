@@ -47,12 +47,70 @@
 </header>
 
     <main class="container">
-        <!-- icon with h1 -->
+        <!-- h1 -->
         <h1>Contact Us</h1>
+
+        <div class="row justify-content-lg-center g-3">
+
+            <form class="col-lg-6 col-md-10 col-sm-10">
+
+                <!-- full name input box -->
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Full Name</span>
+                    <input id="fullName" name="fullName" type="text" class="form-control"
+                           aria-describedby="Full Name Input" aria-label="Full Name" required>
+                </div>
+
+                <!-- contact number input box -->
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Contact Number</span>
+                    <input id="contactNumber" name="emailAddress" type="tel" class="form-control"
+                           aria-describedby="Contact Number Input" aria-label="Contact Number" required>
+                </div>
+
+                <!-- email address input box -->
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Email address</span>
+                    <input id="emailAddress" name="emailAddress" type="email" class="form-control"
+                           aria-describedby="Email Address Input" aria-label="Email Address" required>
+                </div>
+
+                <!-- message input box -->
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Your Message</span>
+                    <textarea id="message" name="message" class="form-control"
+                              aria-label="Email Address" ></textarea>
+                </div>
+
+                <!-- check box -->
+                <div class="mb-3 form-check">
+                    <input id="subscribeCheckbox" name="subscribeCheckbox" type="checkbox" class="form-check-input" >
+                    <label class="form-check-label" for="subscribeCheckbox">Subscribe to out contact list</label>
+                </div>
+
+                <!-- submit button with icon-->
+                <button id="sendButton" type="submit" class="btn btn-primary">
+                    <i class="fas fa-envelope"></i> Send</button>
+
+                <!-- cancel button with icon-->
+                <button id="cancelButton" type="reset" class="btn btn-warning">
+                    <i class="fas fa-undo fa-lg"></i> Cancel</button>
+
+            </form>
+
+            <div class="col-lg-4 col-md-4">
+                <a href="contact-list.html" class="btn btn-primary btn-lg">
+                    <i class="fas fa-users fa-lg"> Show Contact List</i></a>
+            </div>
+
+        </div>
+
+
     </main>
     <!-- Scripting Section -->
     <script src="./scripts/app.js"></script>
     <script src="./node_modules/jquery/dist/jquery.min.js"></script>
     <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="./scripts/contact.js"></script>
 </body>
 </html>
