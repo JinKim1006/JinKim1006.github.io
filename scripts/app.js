@@ -18,14 +18,39 @@
     }
 
 
+    function AjaxRequest(method, url, callback){
+        // STEP 1
+        let xhr = new XMLHttpRequest();
+
+        // STEP 2
+        xhr.addEventListener("readystatechange", () => {
+
+            if(xhr.readyState === 4 && xhr.status === 200){
+                if(typeof callback === "function"){     // check the callback's type is function
+                    callback(xhr.responseText);
+                }else{
+                    console.error("Error: Please provide a valid function for callback.");
+                }
+            }
+        });
+
+        // STEP 3
+        xhr.open(method, url);
+        // STEP 4
+        xhr.send();
+
+    }
+
+    function LoadHeader(data){
+        //console.log(xhr.responseType);
+        $("header").html(data);
+        $(`li>a:contains(${document.title})`).addClass("active");
+        CheckLogin();
+    }
+
+
     function DisplayHomePage() {
         console.log("Display Home Page Called!");
-
-        // JavaScript version - AboutUsButton Click Event
-        // let AboutUsButton = document.getElementById("AboutUsBtn");
-        // AboutUsButton.addEventListener("click", function () {
-        //     location.href = "about.html";
-        // });
 
         // jQuery version - AboutUsButton Click Event
         $("#AboutUsBtn").on("click", () => {
@@ -46,24 +71,9 @@
         });
 
 
-        // JavaScript version - Create and append <p>tag to main, set its attributes, and add text
-        // let MainContent = document.getElementsByTagName("main")[0];
-        // let MainParagraph = document.createElement("p");
-        // MainParagraph.setAttribute("id", "MainParagraph");
-        // MainParagraph.setAttribute("class", "mt-3");
-        // MainParagraph.textContent = "This is the Main Paragraph!";
-        // MainContent.appendChild(MainParagraph);
-
         // jQuery version - Create and append <p>tag to main, set its attributes, and add text
         $("main").append(`<p id="MainParagraph" class="mt-3">This is the Main Paragraph!</p>`);
 
-
-        // JavaScript version - Create <article> and <p> tags, append them to body
-        // let Article = document.createElement("article");
-        // let ArticleParagraph = `<p id="ArticleParagraph" class="mt-3">This is my article paragraph</p>`;
-        // Article.setAttribute("class", "container");
-        // Article.innerHTML= ArticleParagraph;
-        // document.body.appendChild(Article);
 
         // jQuery version - Create <article> and <p> tags, append them to body
         $("body").append(`<article class="container">
@@ -80,8 +90,46 @@
 
     }
 
+    function ContactFormValidation(){
+
+        ValidateField("#fullName",
+            /^([A-Z][a-z]{1,3}\.?\s)?([A-Z][a-z]+)+([\s,-]([A-Z][a-z]+))*$/,
+            "Please enter a valid firstname and lastname (ex. Mr. Harry Potter)");
+
+        ValidateField("#contactNumber",
+            /^(\+\d{1,3}[\s-.])?\(?\d{3}\)?[\s-.]?\d{3}[\s-.]\d{4}$/,
+            "Please enter a valid contact phone number (ex. 416-836-9876)");
+
+        ValidateField("#emailAddress",
+            /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,10}$/,
+            "Please enter a valid email address (ex. username@isp.com)");
+    }
+
+
+    function ValidateField(input_field_id, regular_expression, error_message) {
+
+        let messageArea = $("#messageArea");
+
+        $(input_field_id).on("blur", function () {
+            //this means the element fullName
+            let inputFieldText = $(this).val();
+            if (!regular_expression.test(inputFieldText)) {
+                // fail validation
+                $(this).trigger("focus").trigger("select");
+                messageArea.addClass("alert alert-danger").text(error_message).show();
+            } else {
+                // pass validation
+                messageArea.removeAttr("class").hide();
+            }
+        });
+    }
+
+
+
     function DisplayContactPage() {
         console.log("Display Contact Us Page Called!");
+
+        ContactFormValidation();
 
         let sendButton = document.getElementById("sendButton");
         let subscribeCheckbox = document.getElementById("subscribeCheckbox");
@@ -90,7 +138,6 @@
         {
             if(subscribeCheckbox.checked){
                 console.log("Checkbox checked!")
-
                 AddContact(fullName.value, contactNumber.value, emailAddress.value);
             }
         });
@@ -159,7 +206,9 @@
     }
 
     function DisplayEditPage() {
-        console.log("Display Edit Contact Page Called!");
+        console.log("Display Edit Page Called!");
+
+        ContactFormValidation();
 
         let page = location.hash.substring(1);
 
@@ -217,9 +266,80 @@
         }
     }
 
+
+    function DisplayRegisterPage(){
+        console.log("Display Register Page Called!");
+    }
+
+
+    function DisplayLoginPage(){
+        console.log("Display Login Page Called!");
+
+        let messageArea = $("#messageArea");
+        messageArea.hide();
+
+        $("#loginButton").on("click", function() {
+
+            let success = false;
+            let newUser = new core.User();
+
+            $.get("./data/user.json", function (data) {
+
+                for(const user of data.users){
+
+                    //check if the username and password
+                    if(username.value === user.Username && password.valueOf === user.Password)
+                    {
+                        newUser.fromJSON(user);
+                        success = true;
+                        break;
+                    }
+                }
+
+                if(success)
+                {
+                    // add user to session storage
+                    sessionStorage.setItem("user", newUser.serialize());
+                    messageArea.removeAttr("class").hide();
+
+                    // redirect user to secure area of the site.
+                    location.href = "contact-list.html";
+                }else{
+                    // they do not match
+                    $("#username").trigger("focus").trigger("select");
+                    messageArea.addClass("alert alert-danger").text("Error: Invalid Login Credentials").show();
+                }
+            });
+        });
+
+        $("#cancelButton").on("click", function(){
+            document.forms[0].reset();
+            location.href = "index.html";
+        });
+
+    }
+
+    function CheckLogin(){
+        if(sessionStorage.getItem("user"))
+        {
+            $("#login").html(`<a id="logout" class="nav-link" href="#">
+                            <i class="fa-solid fa-sign-out-alt"></i> Logout</a>`);
+        }
+
+        $("#logout").on("click", function() {
+            sessionStorage.clear();
+            location.href = "index.html";
+        });
+
+
+    }
+
     function Start()
     {
         console.log("App Started!");
+
+        AjaxRequest("GET", "header.html", LoadHeader);
+
         switch(document.title)
         {
             case "Home":
@@ -242,6 +362,12 @@
                 break;
             case "Edit Contact":
                 DisplayEditPage();
+                break;
+            case "Register":
+                DisplayRegisterPage();
+                break;
+            case "Login":
+                DisplayLoginPage();
                 break;
         }
     }
